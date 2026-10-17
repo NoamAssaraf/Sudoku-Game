@@ -10,4 +10,6 @@ public:
     bool setCell(int row, int col, int num);
     bool findEmptyCell(int &row, int &col) const;
     bool solve();
+    void boardClear();
+    void PuzzleCreator();
 };

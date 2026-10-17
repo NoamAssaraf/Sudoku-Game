@@ -49,5 +49,12 @@ int main() {
         std::cout << "\033[2J\033[1;1H";
         board.printBoard();
     }
+    std::cout << "\033[2J\033[1;1H";
+    std::cout << "startttttttttttttt" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    board.PuzzleCreator();
+    std::cout << "\033[2J\033[1;1H";
+    board.printBoard();
+        
     return 0;
 }
