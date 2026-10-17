@@ -23,7 +23,7 @@ void SudokuBoard::printBoard() {
                 std::cout << " | ";
             }
             if (board[i][j] == 0) {
-                std::cout << ". ";
+                std::cout << "* ";
             } else {
                 std::cout << board[i][j] << " ";
             }
@@ -68,16 +68,9 @@ bool SudokuBoard::isValidMove(int row, int col, int num) const {
 
 bool SudokuBoard::setCell(int row, int col, int num) {
     if (isValidMove(row, col, num)) {
-        system("clear");
         board[row][col] = num;
-        printBoard();
         return true;
     } else {
-        system("clear");
-        std::cout << "Invalid move: " << num << " cannot be placed at (" << row << ", " << col << ")." << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        system("clear");
-        printBoard();
         return false;
     }
 }
