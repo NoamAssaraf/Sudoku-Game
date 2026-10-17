@@ -32,5 +32,22 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         board.printBoard();
     }
+    std::cout << "solve attempt:" << std::endl;
+    board.setCell(3, 0, 5);
+    board.setCell(6, 2, 5);
+    board.printBoard();
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if(board.solve()){
+        std::cout << "\033[2J\033[1;1H";
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        board.printBoard();
+    }
+    else {
+        std::cout << "\033[2J\033[1;1H";
+        std::cout << "Failed to solve the Sudoku puzzle." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        std::cout << "\033[2J\033[1;1H";
+        board.printBoard();
+    }
     return 0;
 }

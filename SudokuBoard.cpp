@@ -74,3 +74,37 @@ bool SudokuBoard::setCell(int row, int col, int num) {
         return false;
     }
 }
+
+bool SudokuBoard::findEmptyCell(int &row, int &col) const {
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            if (board[i][j] == 0) {
+                row = i;
+                col = j;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool SudokuBoard::solve() {
+    int row, col;
+    if (!findEmptyCell(row, col)) {
+        return true; // Puzzle solved
+    }
+
+    for (int num = 1; num <= 9; ++num) {
+        if (isValidMove(row, col, num)) {
+            board[row][col] = num;
+
+            if (solve()) {
+                return true;
+            }
+
+            board[row][col] = 0; // Backtrack
+        }
+    }
+
+    return false; // Trigger backtracking
+}
