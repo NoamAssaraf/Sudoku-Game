@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <thread>
 #include <chrono>
+#include <vector>
+#include <random>
+#include <algorithm>
 
 SudokuBoard::SudokuBoard() {
     for (int i = 0; i < 9; ++i) {
@@ -107,4 +110,38 @@ bool SudokuBoard::solve() {
     }
 
     return false; // Trigger backtracking
+}
+
+void SudokuBoard::boardClear() {
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            board[i][j] = 0;
+        }
+    }
+}
+
+void SudokuBoard::PuzzleCreator() {
+    // Clear the board first
+    boardClear();
+    std::vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(numbers.begin(), numbers.end(), g);
+
+    // Randomly fill some cells to create a puzzle
+    for (int i=0; i<9; i++){
+        board[0][i] = numbers[i]; // Fill diagonal cells for simplicity
+    }
+    solve(); // Solve the board to ensure it's a valid Sudoku puzzle
+    int level = g() % 3 + 1; // Random difficulty level between 1 and 3
+    int cellsToRemove = level * 20 ;
+    while (cellsToRemove > 0) {
+        int row = g() % 9;
+        int col = g() % 9;
+
+        if (board[row][col] != 0) {
+            board[row][col] = 0; // Remove the number to create a puzzle
+            --cellsToRemove;
+        }
+    }
 }
