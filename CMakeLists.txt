@@ -4,4 +4,6 @@ project(SudokuGame)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(SudokuGame main.cpp SudokuBoard.cpp)
+add_executable(SudokuGame src/main.cpp src/SudokuBoard.cpp)
+
+target_include_directories(SudokuGame PRIVATE include)
