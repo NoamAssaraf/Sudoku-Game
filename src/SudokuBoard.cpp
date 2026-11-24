@@ -1,45 +1,19 @@
 #include "SudokuBoard.hpp"
 #include <array>
-#include <iostream>
-#include <cstdlib>
-#include <thread>
-#include <chrono>
-#include <vector>
 #include <random>
 #include <algorithm>
 
 SudokuBoard::SudokuBoard() {
-    for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 9; ++j) {
-            board[i][j] = 0;
-        }
-    }
-}
+        boardClear();}
 
-void SudokuBoard::printBoard() {
-    for (int i = 0; i < 9; ++i) {
-        if (i%3 == 0 && i != 0) {
-            std::cout << "-------+--------+------" << std::endl;
-        }
-        for (int j = 0; j < 9; ++j) {
-            if (j%3 == 0 && j != 0) {
-                std::cout << " | ";
-            }
-            if (board[i][j] == 0) {
-                std::cout << "* ";
-            } else {
-                std::cout << board[i][j] << " ";
-            }
-        }
-        std::cout << std::endl;
-
-    }
-}
 
 bool SudokuBoard::isValidMove(int row, int col, int num) const {
     // Check if the number is within the valid range (1-9)
-    if (num < 1 || num > 9) {
+    if ((num < 1 || num > 9) || (!isInBounds(row, col))) {
         return false; // Invalid number
+    }
+    if(fixedCells[row][col]) {
+        return false; // Cannot change a fixed cell
     }
     // Check if the number is already in the row
     for (int j = 0; j < 9; ++j) {
@@ -68,7 +42,6 @@ bool SudokuBoard::isValidMove(int row, int col, int num) const {
 
     return true;
 }
-
 bool SudokuBoard::setCell(int row, int col, int num) {
     if (isValidMove(row, col, num)) {
         board[row][col] = num;
@@ -77,7 +50,6 @@ bool SudokuBoard::setCell(int row, int col, int num) {
         return false;
     }
 }
-
 bool SudokuBoard::findEmptyCell(int &row, int &col) const {
     for (int i = 0; i < 9; ++i) {
         for (int j = 0; j < 9; ++j) {
@@ -90,7 +62,6 @@ bool SudokuBoard::findEmptyCell(int &row, int &col) const {
     }
     return false;
 }
-
 bool SudokuBoard::solve() {
     int row, col;
     if (!findEmptyCell(row, col)) {
@@ -111,26 +82,20 @@ bool SudokuBoard::solve() {
 
     return false; // Trigger backtracking
 }
-
 void SudokuBoard::boardClear() {
-    for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 9; ++j) {
-            board[i][j] = 0;
-        }
-    }
+    board = {};
+    fixedCells = {};
 }
-
 void SudokuBoard::PuzzleCreator() {
     // Clear the board first
     boardClear();
-    std::vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::array<int, 9> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(numbers.begin(), numbers.end(), g);
 
-    // Randomly fill some cells to create a puzzle
     for (int i=0; i<9; i++){
-        board[0][i] = numbers[i]; // Fill diagonal cells for simplicity
+        board[0][i] = numbers[i]; 
     }
     solve(); // Solve the board to ensure it's a valid Sudoku puzzle
     int level = g() % 3 + 1; // Random difficulty level between 1 and 3
@@ -140,8 +105,53 @@ void SudokuBoard::PuzzleCreator() {
         int col = g() % 9;
 
         if (board[row][col] != 0) {
-            board[row][col] = 0; // Remove the number to create a puzzle
+            board[row][col] = 0;
             --cellsToRemove;
         }
     }
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            if (board[i][j] != 0) {
+                fixedCells[i][j] = true;
+            }
+        }
+    }
+}
+bool SudokuBoard::clearCell(int row, int col) {
+    if (isInBounds(row, col)) {
+        if (!fixedCells[row][col] && board[row][col] != 0) {
+            board[row][col] = 0;
+            return true;
+        }
+    }   
+    return false; // Cannot clear a fixed cell
+}
+void SudokuBoard::resetPlayerMoves() {
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            if (!fixedCells[i][j]) {
+                board[i][j] = 0;
+            }
+        }
+    }
+}
+bool SudokuBoard::isCellFixed(int row, int col) const {
+    if (isInBounds(row, col)) {
+        return fixedCells[row][col];
+    }
+    return false;
+}
+int SudokuBoard::getCell(int row, int col) const {
+    if (isInBounds(row, col)) {
+        return board[row][col];
+    }
+    return 0;
+}
+bool SudokuBoard::isInBounds(int row, int col) const {
+    return (row >= 0 && row < 9) && (col >= 0 && col < 9);
+}
+bool SudokuBoard::isSolved() const {
+    int row;
+    int col;
+    return !findEmptyCell(row,col);
 }
